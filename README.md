@@ -1,7 +1,7 @@
-#Spring JWT Authenticator
+# Spring JWT Authenticator
 This library is a standalone implementation of JWT (Json Web Token) into Spring Security.
 
-##Dependency
+## Dependency
 **Maven:**
 ```
 <repositories>
@@ -27,7 +27,7 @@ dependencies {
 	implementation 'com.github.ESchouten:SpringJWTAuthenticator:0.1.5'
 }
 ```
-##Implementation
+## Implementation
 To use this library, you have to implement it into your Spring Security configuration.
 
 **Example:**
@@ -66,6 +66,6 @@ To use this library, you have to implement it into your Spring Security configur
                 
                 **Etc**
 ```
-##Built with
+## Built with
 * Spring Security - https://spring.io/
 * JJWT - https://www.jsonwebtoken.io/
