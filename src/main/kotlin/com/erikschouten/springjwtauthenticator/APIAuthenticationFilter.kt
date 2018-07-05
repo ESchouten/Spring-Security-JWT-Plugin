@@ -12,7 +12,7 @@ import org.springframework.security.web.authentication.AbstractAuthenticationPro
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
 
-class APIAuthenticationFilter(private val userDetailsService: UserDetailsService) : AbstractAuthenticationProcessingFilter("/login") {
+class APIAuthenticationFilter : AbstractAuthenticationProcessingFilter("/login") {
 
     init {
         //Set HTTP status of response on success and on fail
