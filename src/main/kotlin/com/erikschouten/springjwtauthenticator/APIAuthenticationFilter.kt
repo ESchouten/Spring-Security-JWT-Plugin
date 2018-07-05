@@ -21,7 +21,7 @@ class APIAuthenticationFilter : AbstractAuthenticationProcessingFilter("/login")
                 response.status = HttpServletResponse.SC_OK
                 response.contentType = MediaType.APPLICATION_JSON_VALUE
                 response.writer.write(ObjectMapper().writeValueAsString(
-                        SecurityContextHolder.getContext().authentication.authorities.toList()))
+                        SecurityContextHolder.getContext().authentication.authorities.map { it.authority }))
             }
         }
         setAuthenticationFailureHandler { _, response, _ -> response.status = HttpServletResponse.SC_BAD_REQUEST }
