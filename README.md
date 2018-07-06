@@ -1,6 +1,22 @@
 # Spring JWT Authenticator
-This library is a standalone implementation of JWT (Json Web Token) into Spring Security.
+This library is a standalone implementation of JWT (Json Web Token) authentication into Spring Security.
 
+## Usage
+**Login:**
+
+To login, do a POST request to '/login'
+```
+{
+    username: "user"
+    password: "pwd"
+}
+```
+Each response from the server, when successfully authenticated, contains the following header:
+```
+Authorization: Bearer eyJhbGciOiJIUz...
+```
+Refresh this token locally each response received to ensure you stay authenticated.
+Add this header to each request to the server.
 ## Dependency
 **Maven:**
 ```
@@ -62,7 +78,7 @@ To use this library, you have to implement it into your Spring Security configur
                 .disable()
                 .authorizeRequests()
 
-                .mvcMatchers("/user/**").hasRole("USERS")
+                .mvcMatchers(HttpMethod.POST, "/login").permitAll()
                 
                 **Etc**
 ```
