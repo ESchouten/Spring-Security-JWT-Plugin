@@ -7,12 +7,11 @@ import org.springframework.security.authentication.AuthenticationServiceExceptio
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.Authentication
 import org.springframework.security.core.context.SecurityContextHolder
-import org.springframework.security.core.userdetails.UserDetailsService
 import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
 
-class APIAuthenticationFilter : AbstractAuthenticationProcessingFilter("/login") {
+class APIAuthenticationFilter(loginUrl: String = "/login") : AbstractAuthenticationProcessingFilter(loginUrl) {
 
     init {
         //Set HTTP status of response on success and on fail

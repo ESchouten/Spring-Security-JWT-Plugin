@@ -21,10 +21,10 @@ import javax.servlet.http.HttpServletResponse
 
 private const val AUTHORIZATION_HEADER = "Authorization"
 private const val HEADER_BEGIN = "Bearer "
-private const val TOKEN_TTL = 30 * 60 * 1000
-private val secret = ByteArray(256).apply { SecureRandom().nextBytes(this) }
 
-class JWTSecurityContextRepository(private val userDetailsService: UserDetailsService) : SecurityContextRepository {
+class JWTSecurityContextRepository(private val userDetailsService: UserDetailsService,
+                                   private val tokenTtlMs: Int = 30 * 60 * 1000,
+                                   private val secret: ByteArray = ByteArray(256).apply { SecureRandom().nextBytes(this) }) : SecurityContextRepository {
 
     private val logger = LoggerFactory.getLogger(JWTSecurityContextRepository::class.java)
 
@@ -82,7 +82,7 @@ class JWTSecurityContextRepository(private val userDetailsService: UserDetailsSe
     }
 
     private fun createJWTForEmail(email: String): String {
-        val expiryDate = Date(System.currentTimeMillis().plus(TOKEN_TTL))
+        val expiryDate = Date(System.currentTimeMillis().plus(tokenTtlMs))
 
         // Prepare JWT with claims set
         return Jwts.builder()
