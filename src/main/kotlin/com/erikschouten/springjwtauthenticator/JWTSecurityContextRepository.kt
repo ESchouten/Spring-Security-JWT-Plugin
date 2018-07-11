@@ -82,14 +82,17 @@ class JWTSecurityContextRepository(private val userDetailsService: UserDetailsSe
     }
 
     private fun createJWTForEmail(email: String): String {
-        val expiryDate = Date(System.currentTimeMillis().plus(tokenTtlMs))
-
         // Prepare JWT with claims set
-        return Jwts.builder()
+        val jwts = Jwts.builder()
                 .setSubject(email)
-                .setExpiration(expiryDate)
                 .signWith(SignatureAlgorithm.HS512, secret.copyOf())
-                .compact()
+
+        if (tokenTtlMs != -1) {
+            val expiryDate = Date(System.currentTimeMillis().plus(tokenTtlMs))
+            jwts.setExpiration(expiryDate)
+        }
+
+        return jwts.compact()
 
     }
 
