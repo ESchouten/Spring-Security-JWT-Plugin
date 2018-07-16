@@ -6,7 +6,7 @@
 
     <groupId>com.erikschouten</groupId>
     <artifactId>SpringJWTAuthenticator</artifactId>
-    <version>0.1.8</version>
+    <version>0.1.9-SNAPSHOT</version>
 
     <properties>
         <kotlin.version>1.2.51</kotlin.version>
@@ -94,6 +94,18 @@
                         <phase>test-compile</phase>
                         <goals>
                             <goal>test-compile</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>attach-sources</id>
+                        <goals>
+                            <goal>jar</goal>
                         </goals>
                     </execution>
                 </executions>
