@@ -33,11 +33,12 @@ class APIAuthenticationFilter(loginUrl: String = "/login") : AbstractAuthenticat
         }
 
         val credentials = jacksonObjectMapper().readValue(request.inputStream, AccountCredentials::class.java)
-        val authToken = UsernamePasswordAuthenticationToken(credentials.username, credentials.password)
+        if (credentials.email == null && credentials.username == null) throw Exception("Need username or email field")
+        val authToken = UsernamePasswordAuthenticationToken(credentials.username ?: credentials.email, credentials.password)
 
         return authenticationManager.authenticate(authToken)
     }
 
     //Class used to map credentials on
-    class AccountCredentials(val username: String, val password: String)
+    class AccountCredentials(val email: String?, val username: String?, val password: String)
 }
