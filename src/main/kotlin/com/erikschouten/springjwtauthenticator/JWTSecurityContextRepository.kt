@@ -9,6 +9,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.context.SecurityContext
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.core.userdetails.UserDetailsService
+import org.springframework.security.core.userdetails.UsernameNotFoundException
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource
 import org.springframework.security.web.context.HttpRequestResponseHolder
 import org.springframework.security.web.context.SaveContextOnUpdateOrErrorResponseWrapper
@@ -24,7 +25,8 @@ private const val HEADER_BEGIN = "Bearer "
 
 class JWTSecurityContextRepository(private val userDetailsService: UserDetailsService,
                                    private val tokenTtlMs: Int = 30 * 60 * 1000,
-                                   private val secret: ByteArray = ByteArray(256).apply { SecureRandom().nextBytes(this) }) : SecurityContextRepository {
+                                   private val secret: ByteArray = ByteArray(256).apply { SecureRandom().nextBytes(this) })
+    : SecurityContextRepository {
 
     private val logger = LoggerFactory.getLogger(JWTSecurityContextRepository::class.java)
 
@@ -47,6 +49,8 @@ class JWTSecurityContextRepository(private val userDetailsService: UserDetailsSe
             logger.debug("Old/invalid signature detected")
         } catch (ex: ExpiredJwtException) {
             logger.debug("Token is expired")
+        } catch (ex: UsernameNotFoundException) {
+            logger.debug("Username not found")
         } finally {
             requestResponseHolder.response =
                     SaveContextAsJWTOnUpdateOrErrorResponseWrapper(requestResponseHolder.response)
@@ -78,11 +82,9 @@ class JWTSecurityContextRepository(private val userDetailsService: UserDetailsSe
                 }
             }
         }
-
     }
 
     private fun createJWTForEmail(email: String): String {
-        // Prepare JWT with claims set
         val jwts = Jwts.builder()
                 .setSubject(email)
                 .signWith(SignatureAlgorithm.HS512, secret.copyOf())
@@ -93,7 +95,6 @@ class JWTSecurityContextRepository(private val userDetailsService: UserDetailsSe
         }
 
         return jwts.compact()
-
     }
 
     private fun validateTokenAndExtractEmail(header: String): String {

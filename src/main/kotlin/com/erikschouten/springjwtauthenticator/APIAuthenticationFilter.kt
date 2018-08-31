@@ -14,7 +14,6 @@ import javax.servlet.http.HttpServletResponse
 class APIAuthenticationFilter(loginUrl: String = "/login") : AbstractAuthenticationProcessingFilter(loginUrl) {
 
     init {
-        //Set HTTP status of response on success and on fail
         setAuthenticationSuccessHandler { _, response, _ ->
             run {
                 response.status = HttpServletResponse.SC_OK
@@ -23,7 +22,7 @@ class APIAuthenticationFilter(loginUrl: String = "/login") : AbstractAuthenticat
                         SecurityContextHolder.getContext().authentication.authorities.map { it.authority }))
             }
         }
-        setAuthenticationFailureHandler { _, response, _ -> response.status = HttpServletResponse.SC_BAD_REQUEST }
+        setAuthenticationFailureHandler { _, response, _ -> response.status = HttpServletResponse.SC_FORBIDDEN }
     }
 
     //Catch /login request, authenticate token generated from credentials extracted from the request
@@ -39,6 +38,5 @@ class APIAuthenticationFilter(loginUrl: String = "/login") : AbstractAuthenticat
         return authenticationManager.authenticate(authToken)
     }
 
-    //Class used to map credentials on
     class AccountCredentials(val email: String?, val username: String?, val password: String)
 }

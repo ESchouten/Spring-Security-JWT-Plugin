@@ -6,10 +6,10 @@
 
     <groupId>com.erikschouten</groupId>
     <artifactId>SpringJWTAuthenticator</artifactId>
-    <version>0.1.10-SNAPSHOT</version>
+    <version>0.1.11</version>
 
     <properties>
-        <kotlin.version>1.2.51</kotlin.version>
+        <kotlin.version>1.2.61</kotlin.version>
         <jackson-kotlin.version>2.9.4</jackson-kotlin.version>
         <spring.web>5.0.5.RELEASE</spring.web>
         <spring.security>5.0.4.RELEASE</spring.security>
