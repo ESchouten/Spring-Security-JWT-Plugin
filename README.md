@@ -29,7 +29,7 @@ Add this header to each request to the server.
 
 <dependency>
     <groupId>com.github.ESchouten</groupId>
-    <artifactId>SpringJWTAuthenticator</artifactId>
+    <artifactId>Spring-Security-JWT-Plugin</artifactId>
     <version>0.1.11</version>
 </dependency>
 ```
@@ -40,7 +40,7 @@ repositories {
 }
 
 dependencies {
-	implementation 'com.github.ESchouten:SpringJWTAuthenticator:0.1.11'
+	implementation 'com.github.ESchouten:Spring-Security-JWT-Plugin:0.1.11'
 }
 ```
 ## Implementation
