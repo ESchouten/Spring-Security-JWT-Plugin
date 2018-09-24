@@ -97,7 +97,7 @@ class JWTSecurityContextRepository(private val userDetailsService: UserDetailsSe
         return jwts.compact()
     }
 
-    private fun validateTokenAndExtractEmail(header: String): String {
+    fun validateTokenAndExtractEmail(header: String): String {
         val token = if (header.startsWith(HEADER_BEGIN)) header.substring(7) else header
 
         return Jwts.parser().setSigningKey(secret.copyOf()).parseClaimsJws(token).body.subject

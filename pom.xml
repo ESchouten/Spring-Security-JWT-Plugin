@@ -6,7 +6,7 @@
 
     <groupId>com.erikschouten</groupId>
     <artifactId>SpringJWTAuthenticator</artifactId>
-    <version>0.1.11</version>
+    <version>0.1.12</version>
 
     <properties>
         <kotlin.version>1.2.61</kotlin.version>
