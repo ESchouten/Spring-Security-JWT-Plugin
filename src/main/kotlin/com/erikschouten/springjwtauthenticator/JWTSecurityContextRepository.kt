@@ -46,11 +46,11 @@ class JWTSecurityContextRepository(private val userDetailsService: UserDetailsSe
                 }
             }
         } catch (ex: SignatureException) {
-            logger.debug("Old/invalid signature detected")
+            logger.info("Old/invalid signature detected")
         } catch (ex: ExpiredJwtException) {
-            logger.debug("Token is expired")
+            logger.info("Token is expired")
         } catch (ex: UsernameNotFoundException) {
-            logger.debug("Username not found")
+            logger.info("Username not found")
         } finally {
             requestResponseHolder.response =
                     SaveContextAsJWTOnUpdateOrErrorResponseWrapper(requestResponseHolder.response)
