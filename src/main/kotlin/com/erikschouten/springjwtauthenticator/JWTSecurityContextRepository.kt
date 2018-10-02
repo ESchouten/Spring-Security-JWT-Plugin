@@ -16,9 +16,8 @@ import org.springframework.security.web.context.HttpRequestResponseHolder
 import org.springframework.security.web.context.SaveContextOnUpdateOrErrorResponseWrapper
 import org.springframework.security.web.context.SecurityContextRepository
 import org.springframework.web.util.WebUtils
-import java.security.Key
-import java.security.SecureRandom
 import java.util.*
+import javax.crypto.SecretKey
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
 
@@ -27,7 +26,7 @@ private const val HEADER_BEGIN = "Bearer "
 
 class JWTSecurityContextRepository(private val userDetailsService: UserDetailsService,
                                    private val tokenTtlMs: Int = 30 * 60 * 1000,
-                                   private val key: Key = Keys.secretKeyFor(SignatureAlgorithm.HS512))
+                                   private val key: SecretKey = Keys.secretKeyFor(SignatureAlgorithm.HS512))
     : SecurityContextRepository {
 
     private val logger = LoggerFactory.getLogger(JWTSecurityContextRepository::class.java)

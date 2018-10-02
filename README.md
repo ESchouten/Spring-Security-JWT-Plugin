@@ -30,7 +30,7 @@ Add this header to each request to the server.
 <dependency>
     <groupId>com.github.ESchouten</groupId>
     <artifactId>Spring-Security-JWT-Plugin</artifactId>
-    <version>0.1.11</version>
+    <version>0.1.14</version>
 </dependency>
 ```
 **Gradle:**
@@ -40,7 +40,7 @@ repositories {
 }
 
 dependencies {
-	implementation 'com.github.ESchouten:Spring-Security-JWT-Plugin:0.1.11'
+	implementation 'com.github.ESchouten:Spring-Security-JWT-Plugin:0.1.14'
 }
 ```
 ## Implementation
