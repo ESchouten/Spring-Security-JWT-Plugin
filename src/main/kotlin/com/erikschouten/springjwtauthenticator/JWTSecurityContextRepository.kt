@@ -3,7 +3,8 @@ package com.erikschouten.springjwtauthenticator
 import io.jsonwebtoken.ExpiredJwtException
 import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.SignatureAlgorithm
-import io.jsonwebtoken.SignatureException
+import io.jsonwebtoken.security.Keys
+import io.jsonwebtoken.security.SignatureException
 import org.slf4j.LoggerFactory
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.context.SecurityContext
@@ -15,6 +16,7 @@ import org.springframework.security.web.context.HttpRequestResponseHolder
 import org.springframework.security.web.context.SaveContextOnUpdateOrErrorResponseWrapper
 import org.springframework.security.web.context.SecurityContextRepository
 import org.springframework.web.util.WebUtils
+import java.security.Key
 import java.security.SecureRandom
 import java.util.*
 import javax.servlet.http.HttpServletRequest
@@ -25,7 +27,7 @@ private const val HEADER_BEGIN = "Bearer "
 
 class JWTSecurityContextRepository(private val userDetailsService: UserDetailsService,
                                    private val tokenTtlMs: Int = 30 * 60 * 1000,
-                                   private val secret: ByteArray = ByteArray(256).apply { SecureRandom().nextBytes(this) })
+                                   private val key: Key = Keys.secretKeyFor(SignatureAlgorithm.HS512))
     : SecurityContextRepository {
 
     private val logger = LoggerFactory.getLogger(JWTSecurityContextRepository::class.java)
@@ -87,7 +89,7 @@ class JWTSecurityContextRepository(private val userDetailsService: UserDetailsSe
     private fun createJWTForEmail(email: String): String {
         val jwts = Jwts.builder()
                 .setSubject(email)
-                .signWith(SignatureAlgorithm.HS512, secret.copyOf())
+                .signWith(key)
 
         if (tokenTtlMs != -1) {
             val expiryDate = Date(System.currentTimeMillis().plus(tokenTtlMs))
@@ -100,7 +102,7 @@ class JWTSecurityContextRepository(private val userDetailsService: UserDetailsSe
     fun validateTokenAndExtractEmail(header: String): String {
         val token = if (header.startsWith(HEADER_BEGIN)) header.substring(7) else header
 
-        return Jwts.parser().setSigningKey(secret.copyOf()).parseClaimsJws(token).body.subject
+        return Jwts.parser().setSigningKey(key).parseClaimsJws(token).body.subject
     }
 
 }
