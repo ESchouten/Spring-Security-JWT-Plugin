@@ -7,8 +7,8 @@ This library is a standalone implementation of JWT (Json Web Token) authenticati
 To login, do a POST request to '/login'
 ```
 {
-    username: "user"
-    password: "pwd"
+    "username": "user"
+    "password": "pwd"
 }
 ```
 Each response from the server, when successfully authenticated, contains the following header:
