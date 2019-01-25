@@ -1,7 +1,7 @@
 # Spring JWT Authenticator
-This library is a standalone implementation of JWT (Json Web Token) authentication into Spring Security.
-
 [![](https://jitpack.io/v/ESchouten/Spring-Security-JWT-Plugin.svg)](https://jitpack.io/#ESchouten/Spring-Security-JWT-Plugin)
+
+This library is a standalone implementation of JWT (Json Web Token) authentication into Spring Security.
 ## Usage
 **Login:**
 
