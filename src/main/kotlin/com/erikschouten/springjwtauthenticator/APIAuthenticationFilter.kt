@@ -22,7 +22,7 @@ class APIAuthenticationFilter(loginUrl: String = "/login") : AbstractAuthenticat
                         SecurityContextHolder.getContext().authentication.authorities.map { it.authority }))
             }
         }
-        setAuthenticationFailureHandler { _, response, _ -> response.status = HttpServletResponse.SC_FORBIDDEN }
+        setAuthenticationFailureHandler { _, response, _ -> response.status = HttpServletResponse.SC_UNAUTHORIZED }
     }
 
     //Catch /login request, authenticate token generated from credentials extracted from the request
