@@ -22,11 +22,12 @@ import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
 
 private const val AUTHORIZATION_HEADER = "Authorization"
-private const val HEADER_BEGIN = "Bearer "
+private const val HEADER_START = "Bearer "
 
-class JWTSecurityContextRepository(private val userDetailsService: UserDetailsService,
-                                   private val tokenTtlMs: Int = 30 * 60 * 1000,
-                                   private val key: SecretKey = Keys.secretKeyFor(SignatureAlgorithm.HS512))
+class JWTSecurityContextRepository(
+        private val userDetailsService: UserDetailsService,
+        private val tokenTtlMs: Int = 30 * 60 * 1000,
+        private val key: SecretKey = Keys.secretKeyFor(SignatureAlgorithm.HS512))
     : SecurityContextRepository {
 
     private val logger = LoggerFactory.getLogger(JWTSecurityContextRepository::class.java)
@@ -35,9 +36,8 @@ class JWTSecurityContextRepository(private val userDetailsService: UserDetailsSe
         val context = SecurityContextHolder.createEmptyContext()
 
         try {
-            val jwt = requestResponseHolder.request.getHeader(AUTHORIZATION_HEADER)
-            if (jwt != null) {
-                validateTokenAndExtractEmail(jwt).let { email ->
+            requestResponseHolder.request.getHeader(AUTHORIZATION_HEADER)?.let { token ->
+                validateTokenAndExtractEmail(token).let { email ->
                     val userDetails = this.userDetailsService.loadUserByUsername(email)
                     val authentication =
                             UsernamePasswordAuthenticationToken(userDetails, null, userDetails.authorities)
@@ -69,7 +69,7 @@ class JWTSecurityContextRepository(private val userDetailsService: UserDetailsSe
         responseWrapper.saveContext(context)
     }
 
-    override fun containsContext(request: HttpServletRequest): Boolean = request.getHeader(AUTHORIZATION_HEADER) != null
+    override fun containsContext(request: HttpServletRequest) = request.getHeader(AUTHORIZATION_HEADER) != null
 
     private inner class SaveContextAsJWTOnUpdateOrErrorResponseWrapper(private val response: HttpServletResponse) :
             SaveContextOnUpdateOrErrorResponseWrapper(response, true) {
@@ -78,7 +78,7 @@ class JWTSecurityContextRepository(private val userDetailsService: UserDetailsSe
             if (!isContextSaved) {
                 val authentication = context.authentication as? UsernamePasswordAuthenticationToken
                 authentication?.name?.let { email ->
-                    val token = "Bearer " + createJWTForEmail(email)
+                    val token = HEADER_START + createJWTForEmail(email)
                     response.setHeader(AUTHORIZATION_HEADER, token)
                 }
             }
@@ -99,9 +99,10 @@ class JWTSecurityContextRepository(private val userDetailsService: UserDetailsSe
     }
 
     fun validateTokenAndExtractEmail(header: String): String {
-        val token = if (header.startsWith(HEADER_BEGIN)) header.substring(7) else header
-
-        return Jwts.parser().setSigningKey(key).parseClaimsJws(token).body.subject
+        val token = if (header.startsWith(HEADER_START)) header.removePrefix(HEADER_START) else header
+        return Jwts.parser()
+                .setSigningKey(key)
+                .parseClaimsJws(token)
+                .body.subject
     }
-
 }

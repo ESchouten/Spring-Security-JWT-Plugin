@@ -33,7 +33,8 @@ class APIAuthenticationFilter(loginUrl: String = "/login") : AbstractAuthenticat
 
         val credentials = jacksonObjectMapper().readValue(request.inputStream, AccountCredentials::class.java)
         if (credentials.email == null && credentials.username == null) throw Exception("Need username or email field")
-        val authToken = UsernamePasswordAuthenticationToken(credentials.username ?: credentials.email, credentials.password)
+        val authToken = UsernamePasswordAuthenticationToken(credentials.username
+                ?: credentials.email, credentials.password)
 
         return authenticationManager.authenticate(authToken)
     }

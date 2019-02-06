@@ -6,7 +6,7 @@
 
     <groupId>com.erikschouten</groupId>
     <artifactId>SpringJWTAuthenticator</artifactId>
-    <version>0.1.15</version>
+    <version>0.1.16</version>
 
     <!--mvn versions:update-properties-->
     <!--mvn versions:commit-->
