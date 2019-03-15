@@ -39,12 +39,11 @@ class JWTSecurityContextRepository(
         try {
             requestResponseHolder.request.getHeader(AUTHORIZATION_HEADER)?.let { token ->
                 validateTokenAndExtractEmail(token).let { email ->
-                    val userDetails = this.userDetailsService.loadUserByUsername(email)
-                    val authentication =
-                            UsernamePasswordAuthenticationToken(userDetails, null, userDetails.authorities)
-                    authentication.details =
-                            WebAuthenticationDetailsSource().buildDetails(requestResponseHolder.request)
-                    context.authentication = authentication
+                    context.authentication = this.userDetailsService.loadUserByUsername(email).let { userDetails ->
+                        UsernamePasswordAuthenticationToken(userDetails, null, userDetails.authorities).apply {
+                            details = WebAuthenticationDetailsSource().buildDetails(requestResponseHolder.request)
+                        }
+                    }
                 }
             }
         } catch (ex: SignatureException) {
@@ -77,33 +76,28 @@ class JWTSecurityContextRepository(
 
         public override fun saveContext(context: SecurityContext) {
             if (!isContextSaved) {
-                context.authentication.let {
-                    val token = HEADER_START + createJWT(it)
-                    response.setHeader(AUTHORIZATION_HEADER, token)
-                }
+                response.setHeader(
+                        AUTHORIZATION_HEADER,
+                        HEADER_START + createJWT(context.authentication)
+                )
             }
         }
     }
 
-    private fun createJWT(auth: Authentication): String {
-        val jwts = Jwts.builder()
-                .setSubject(auth.name)
-                .claim("roles", auth.authorities)
-                .signWith(key)
+    private fun createJWT(auth: Authentication) =
+            Jwts.builder()
+                    .setSubject(auth.name)
+                    .claim("roles", auth.authorities)
+                    .signWith(key)
+                    .apply {
+                        if (tokenTtlMs != -1) {
+                            setExpiration(Date(System.currentTimeMillis().plus(tokenTtlMs)))
+                        }
+                    }.compact()
 
-        if (tokenTtlMs != -1) {
-            val expiryDate = Date(System.currentTimeMillis().plus(tokenTtlMs))
-            jwts.setExpiration(expiryDate)
-        }
-
-        return jwts.compact()
-    }
-
-    fun validateTokenAndExtractEmail(header: String): String {
-        val token = if (header.startsWith(HEADER_START)) header.removePrefix(HEADER_START) else header
-        return Jwts.parser()
-                .setSigningKey(key)
-                .parseClaimsJws(token)
-                .body.subject
-    }
+    fun validateTokenAndExtractEmail(header: String) =
+            Jwts.parser()
+                    .setSigningKey(key)
+                    .parseClaimsJws(header.removePrefix(HEADER_START))
+                    .body.subject
 }
