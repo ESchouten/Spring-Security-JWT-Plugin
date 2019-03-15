@@ -7,6 +7,7 @@ import io.jsonwebtoken.security.Keys
 import io.jsonwebtoken.security.SignatureException
 import org.slf4j.LoggerFactory
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
+import org.springframework.security.core.Authentication
 import org.springframework.security.core.context.SecurityContext
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.core.userdetails.UserDetailsService
@@ -76,18 +77,18 @@ class JWTSecurityContextRepository(
 
         public override fun saveContext(context: SecurityContext) {
             if (!isContextSaved) {
-                val authentication = context.authentication as? UsernamePasswordAuthenticationToken
-                authentication?.name?.let { email ->
-                    val token = HEADER_START + createJWTForEmail(email)
+                context.authentication.let {
+                    val token = HEADER_START + createJWT(it)
                     response.setHeader(AUTHORIZATION_HEADER, token)
                 }
             }
         }
     }
 
-    private fun createJWTForEmail(email: String): String {
+    private fun createJWT(auth: Authentication): String {
         val jwts = Jwts.builder()
-                .setSubject(email)
+                .setSubject(auth.name)
+                .claim("roles", auth.authorities)
                 .signWith(key)
 
         if (tokenTtlMs != -1) {
