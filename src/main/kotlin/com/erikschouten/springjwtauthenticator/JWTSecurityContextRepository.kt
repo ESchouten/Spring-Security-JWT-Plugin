@@ -87,7 +87,7 @@ class JWTSecurityContextRepository(
     private fun createJWT(auth: Authentication) =
             Jwts.builder()
                     .setSubject(auth.name)
-                    .claim("roles", auth.authorities)
+                    .claim("roles", auth.authorities.map { it.authority })
                     .signWith(key)
                     .apply {
                         if (tokenTtlMs != -1) {
