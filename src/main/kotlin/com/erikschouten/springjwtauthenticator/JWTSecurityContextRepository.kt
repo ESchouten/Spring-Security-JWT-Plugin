@@ -29,7 +29,7 @@ class JWTSecurityContextRepository(
         private val userDetailsService: UserDetailsService,
         private val tokenTtlMs: Int = 30 * 60 * 1000,
         private val key: SecretKey = Keys.secretKeyFor(SignatureAlgorithm.HS512),
-        private val claimFunctions: List<(String) -> Pair<String, Any>> = emptyList())
+        vararg val claimFunctions: (String) -> Pair<String, Any>)
     : SecurityContextRepository {
 
     private val logger = LoggerFactory.getLogger(JWTSecurityContextRepository::class.java)
@@ -107,5 +107,5 @@ class JWTSecurityContextRepository(
             Jwts.parser()
                     .setSigningKey(key)
                     .parseClaimsJws(header.removePrefix(HEADER_START))
-                    .body.subject
+                    .body.subject!!
 }
