@@ -6,13 +6,13 @@
 
     <groupId>com.erikschouten</groupId>
     <artifactId>SpringJWTAuthenticator</artifactId>
-    <version>0.1.18</version>
+    <version>0.1.19-SNAPSHOT</version>
 
     <!--mvn versions:update-properties-->
     <!--mvn versions:commit-->
     <properties>
-        <kotlin.version>1.3.21</kotlin.version>
-        <spring.version>5.1.4.RELEASE</spring.version>
+        <kotlin.version>1.3.30</kotlin.version>
+        <spring.version>5.1.5.RELEASE</spring.version>
 
         <jjwt.version>0.10.6</jjwt.version>
 

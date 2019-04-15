@@ -28,7 +28,8 @@ private const val HEADER_START = "Bearer "
 class JWTSecurityContextRepository(
         private val userDetailsService: UserDetailsService,
         private val tokenTtlMs: Int = 30 * 60 * 1000,
-        private val key: SecretKey = Keys.secretKeyFor(SignatureAlgorithm.HS512))
+        private val key: SecretKey = Keys.secretKeyFor(SignatureAlgorithm.HS512),
+        private val claimFunctions: List<(String) -> Pair<String, Any>> = emptyList())
     : SecurityContextRepository {
 
     private val logger = LoggerFactory.getLogger(JWTSecurityContextRepository::class.java)
@@ -84,16 +85,23 @@ class JWTSecurityContextRepository(
         }
     }
 
-    private fun createJWT(auth: Authentication) =
-            Jwts.builder()
-                    .setSubject(auth.name)
-                    .claim("roles", auth.authorities.map { it.authority })
-                    .signWith(key)
-                    .apply {
-                        if (tokenTtlMs != -1) {
-                            setExpiration(Date(System.currentTimeMillis().plus(tokenTtlMs)))
-                        }
-                    }.compact()
+    private fun createJWT(auth: Authentication): String {
+        val jwtBuilder = Jwts.builder()
+                .setSubject(auth.name)
+                .claim("roles", auth.authorities.map { it.authority })
+                .signWith(key).apply {
+                    if (tokenTtlMs != -1) {
+                        setExpiration(Date(System.currentTimeMillis().plus(tokenTtlMs)))
+                    }
+                }
+
+        claimFunctions.forEach {
+            val pair = it(auth.name)
+            jwtBuilder.claim(pair.first, pair.second)
+        }
+
+        return jwtBuilder.compact()
+    }
 
     fun validateTokenAndExtractEmail(header: String) =
             Jwts.parser()
