@@ -94,10 +94,11 @@ class JWTSecurityContextRepository(
                         setExpiration(Date(System.currentTimeMillis().plus(tokenTtlMs)))
                     }
                 }
-
-        claimFunctions.forEach {
-            val pair = it(auth.name)
-            jwtBuilder.claim(pair.first, pair.second)
+        if (auth.principal != null) {
+            claimFunctions.forEach {
+                val pair = it(auth.name)
+                jwtBuilder.claim(pair.first, pair.second)
+            }
         }
 
         return jwtBuilder.compact()
