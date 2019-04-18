@@ -76,7 +76,7 @@ class JWTSecurityContextRepository(
             SaveContextOnUpdateOrErrorResponseWrapper(response, true) {
 
         public override fun saveContext(context: SecurityContext) {
-            if (!isContextSaved) {
+            if (!isContextSaved && context.authentication != null) {
                 response.setHeader(
                         AUTHORIZATION_HEADER,
                         HEADER_START + createJWT(context.authentication)
