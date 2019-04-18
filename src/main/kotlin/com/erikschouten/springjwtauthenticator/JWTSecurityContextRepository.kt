@@ -29,7 +29,7 @@ class JWTSecurityContextRepository(
         private val userDetailsService: UserDetailsService,
         private val tokenTtlMs: Int = 30 * 60 * 1000,
         private val key: SecretKey = Keys.secretKeyFor(SignatureAlgorithm.HS512),
-        vararg val claimFunctions: (String) -> Pair<String, Any>?)
+        private vararg val claimFunctions: (String) -> Pair<String, Any>?)
     : SecurityContextRepository {
 
     private val logger = LoggerFactory.getLogger(JWTSecurityContextRepository::class.java)
