@@ -29,7 +29,7 @@ class JWTSecurityContextRepository(
         private val userDetailsService: UserDetailsService,
         private val tokenTtlMs: Int = 30 * 60 * 1000,
         private val key: SecretKey = Keys.secretKeyFor(SignatureAlgorithm.HS512),
-        private vararg val claimFn: (String) -> Array<Pair<String, Any>>)
+        private vararg val claimFn: (String) -> Map<String, Any>)
     : SecurityContextRepository {
 
     private val logger = LoggerFactory.getLogger(JWTSecurityContextRepository::class.java)
@@ -88,18 +88,13 @@ class JWTSecurityContextRepository(
     private fun createJWT(auth: Authentication): String {
         val jwtBuilder = Jwts.builder()
                 .setSubject(auth.name)
-                .claim("roles", auth.authorities.map { it.authority })
                 .signWith(key).apply {
                     if (tokenTtlMs != -1) {
                         setExpiration(Date(System.currentTimeMillis().plus(tokenTtlMs)))
                     }
                 }
         claimFn.forEach { function ->
-            function(auth.name).let { claims ->
-                claims.forEach {
-                    jwtBuilder.claim(it.first, it.second)
-                }
-            }
+            jwtBuilder.addClaims(function(auth.name))
         }
 
         return jwtBuilder.compact()
