@@ -28,9 +28,11 @@ class APIAuthenticationFilter(loginUrl: String = "/login", private val validator
         val authToken = UsernamePasswordAuthenticationToken(credentials.username
                 ?: credentials.email, credentials.password)
 
-        validator.validate(credentials.email!!)
+        val authentication = authenticationManager.authenticate(authToken)
 
-        return authenticationManager.authenticate(authToken)
+        validator.validate(authentication)
+
+        return authentication
     }
 
     class AccountCredentials(val email: String?, val username: String?, val password: String)
