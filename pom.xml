@@ -6,7 +6,7 @@
 
     <groupId>com.erikschouten</groupId>
     <artifactId>SpringJWTAuthenticator</artifactId>
-    <version>0.1.24</version>
+    <version>0.1.26</version>
 
     <!--mvn versions:update-properties-->
     <!--mvn versions:commit-->
@@ -130,13 +130,5 @@
             </plugin>
         </plugins>
     </build>
-
-    <distributionManagement>
-        <repository>
-            <id>github</id>
-            <name>GitHub OWNER Apache Maven Packages</name>
-            <url>https://maven.pkg.github.com/ESchouten/Spring-Security-JWT-Plugin</url>
-        </repository>
-    </distributionManagement>
 
 </project>
