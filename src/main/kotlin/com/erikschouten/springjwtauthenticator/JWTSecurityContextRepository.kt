@@ -1,5 +1,7 @@
 package com.erikschouten.springjwtauthenticator
 
+import com.erikschouten.springjwtauthenticator.validator.ValidationException
+import com.erikschouten.springjwtauthenticator.validator.Validator
 import io.jsonwebtoken.ExpiredJwtException
 import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.SignatureAlgorithm
@@ -29,7 +31,8 @@ class JWTSecurityContextRepository(
         private val userDetailsService: UserDetailsService,
         private val tokenTtlMs: Int = 30 * 60 * 1000,
         private val key: SecretKey = Keys.secretKeyFor(SignatureAlgorithm.HS512),
-        private vararg val claimFn: (String) -> Map<String, Any>)
+        private vararg val claimFn: (String) -> Map<String, Any>,
+        private val validator: Validator = Validator())
     : SecurityContextRepository {
 
     private val logger = LoggerFactory.getLogger(JWTSecurityContextRepository::class.java)
@@ -41,6 +44,8 @@ class JWTSecurityContextRepository(
             requestResponseHolder.request.getHeader(AUTHORIZATION_HEADER)?.let { token ->
                 validateTokenAndExtractEmail(token).let { email ->
                     context.authentication = this.userDetailsService.loadUserByUsername(email).let { userDetails ->
+                        validator.validate(userDetails)
+                        
                         UsernamePasswordAuthenticationToken(userDetails, null, userDetails.authorities).apply {
                             details = WebAuthenticationDetailsSource().buildDetails(requestResponseHolder.request)
                         }
@@ -53,6 +58,8 @@ class JWTSecurityContextRepository(
             logger.info("Token is expired")
         } catch (ex: UsernameNotFoundException) {
             logger.info("Username not found")
+        } catch (ex: ValidationException) {
+            logger.info("Custom jwt validation error")
         } finally {
             requestResponseHolder.response =
                     SaveContextAsJWTOnUpdateOrErrorResponseWrapper(requestResponseHolder.response)
