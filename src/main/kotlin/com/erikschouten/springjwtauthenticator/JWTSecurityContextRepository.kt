@@ -44,7 +44,7 @@ class JWTSecurityContextRepository(
             requestResponseHolder.request.getHeader(AUTHORIZATION_HEADER)?.let { token ->
                 validateTokenAndExtractEmail(token).let { email ->
                     context.authentication = this.userDetailsService.loadUserByUsername(email).let { userDetails ->
-                        validator.validate(userDetails)
+                        validator.validate(userDetails.username)
                         
                         UsernamePasswordAuthenticationToken(userDetails, null, userDetails.authorities).apply {
                             details = WebAuthenticationDetailsSource().buildDetails(requestResponseHolder.request)
