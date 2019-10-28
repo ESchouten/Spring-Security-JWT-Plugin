@@ -1,14 +1,16 @@
 package com.erikschouten.springjwtauthenticator
 
+import com.erikschouten.springjwtauthenticator.validator.Validator
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import org.springframework.security.authentication.AuthenticationServiceException
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.Authentication
+import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
 
-class APIAuthenticationFilter(loginUrl: String = "/login") : AbstractAuthenticationProcessingFilter(loginUrl) {
+class APIAuthenticationFilter(loginUrl: String = "/login", private val validator: Validator = Validator()) : AbstractAuthenticationProcessingFilter(loginUrl) {
 
     init {
         setAuthenticationSuccessHandler { _, response, _ -> response.status = HttpServletResponse.SC_OK }
@@ -26,7 +28,11 @@ class APIAuthenticationFilter(loginUrl: String = "/login") : AbstractAuthenticat
         val authToken = UsernamePasswordAuthenticationToken(credentials.username
                 ?: credentials.email, credentials.password)
 
-        return authenticationManager.authenticate(authToken)
+        val authentication = authenticationManager.authenticate(authToken)
+
+        validator.validate(authentication)
+
+        return authentication
     }
 
     class AccountCredentials(val email: String?, val username: String?, val password: String)
