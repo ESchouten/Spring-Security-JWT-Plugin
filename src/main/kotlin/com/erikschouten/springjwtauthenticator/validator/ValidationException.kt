@@ -1,3 +1,5 @@
 package com.erikschouten.springjwtauthenticator.validator
 
-class ValidationException: Exception("User validation exception")
+import org.springframework.security.core.AuthenticationException
+
+class ValidationException(message: String): AuthenticationException(message)
